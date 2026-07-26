@@ -851,7 +851,8 @@ Featured playlists: `Python Programming for Finance`, `Machine Learning with Pyt
 
 [**The AI Advantage**](https://www.youtube.com/@aiadvantage) \
 Content about: AI / LLM news, tips, and tricks. \
-Featured playlists: `ChatGPT Beginner Course`.
+Featured playlists: `ChatGPT Beginner Course`. \
+<br />
 
 [🔼 Back to the top](#contents)
 
@@ -1309,7 +1310,7 @@ Featured playlists: `Hardware reviews`, `Linux essentials`, `Linux commands for 
 
 [**Chris Titus Tech**](https://www.youtube.com/@ChrisTitusTech) \
 Content about: Linux, Windows, and his utility tools. \
-Featured playlists: `CTT Utility Videos`, `Windows Playlists`, `Linux Playlists`.
+Featured playlists: `CTT Utility Videos`, `Windows Playlists`, `Linux Playlists`. \
 <br/>
 
 [<img align="left" height="94px" width="94px" alt="Channel's avatar" src="https://yt3.googleusercontent.com/gEKEuY4AA5nCx_eXLXtRlEZPLR4Fb9iPehmtpiBynSnzT-r79Y26D-SjLRO1G2odHfN8SbBEz8g=s900-c-k-c0x00ffffff-no-rj"/>](https://www.youtube.com/@BreadOnPenguins)
@@ -1317,7 +1318,6 @@ Featured playlists: `CTT Utility Videos`, `Windows Playlists`, `Linux Playlists`
 [**Bread on Penguins**](https://www.youtube.com/@BreadOnPenguins) \
 Content about: Linux \
 Featured playlists: `window manager, dotfiles, and configuration`, `linux programs you should know about!`, `shell scripts, tricks, power usage.`.
-<br/>
 
 [<img align="left" height="94px" width="94px" alt="Channel's avatar" src="https://yt3.ggpht.com/QOHUDP-HekFhzwb2HJnyaMngXh55Gu3zh9PPcAZfr94erhUWThk1ohZmlEm-xoWLtfJXMY13=s800-c-k-c0x00ffffff-no-rj"/>](https://youtube.com/channel/UCo71RUe6DX4w-Vd47rFLXPg)
 
