@@ -1,5 +1,14 @@
 ---
-// Main page component - to be implemented in Task 2
+// index.astro - Main page: integrates all components
+import SearchBar from '../components/SearchBar.astro';
+import FilterBar from '../components/FilterBar.astro';
+import ChannelCard from '../components/ChannelCard.astro';
+import '../styles/global.css';
+
+// Load channels data at build time
+import channelsData from '../../public/channels.json';
+
+const { channels, categories, allTopics } = channelsData;
 ---
 
 <!DOCTYPE html>
@@ -7,10 +16,226 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Directory of awesome YouTube channels for developers and tech enthusiasts" />
     <title>Awesome YouTubers Directory</title>
   </head>
   <body>
-    <h1>Awesome YouTubers Directory</h1>
-    <p>Loading...</p>
+    <header>
+      <div class="container">
+        <h1 style="margin: 2rem 0 1rem 0; font-size: 2.5rem;">Awesome YouTubers</h1>
+        <p style="margin-bottom: 2rem; color: #555;">Discover the best tech YouTube channels</p>
+      </div>
+    </header>
+
+    <FilterBar categories={categories} allTopics={allTopics} />
+
+    <SearchBar />
+
+    <main class="container">
+      <div id="channel-grid" class="channel-grid">
+        {channels.map((channel) => (
+          <ChannelCard channel={channel} />
+        ))}
+      </div>
+    </main>
+
+    <script>
+      import { filterChannels, sortChannels, updateURLParams, renderEmptyState, updateResultsCount } from '../scripts/filter.js';
+
+      // Load channels data client-side
+      const channelsData = await fetch('/channels.json').then(r => r.json());
+      let allChannels = channelsData.channels;
+
+      // Filter state
+      let filterState = {
+        search: '',
+        category: 'all',
+        tags: [],
+        bookmarksOnly: false,
+        sort: 'az',
+      };
+
+      // Apply filters and render
+      function applyFilters() {
+        let filtered = filterChannels(
+          allChannels,
+          filterState.search,
+          filterState.category,
+          filterState.tags,
+          filterState.bookmarksOnly
+        );
+
+        filtered = sortChannels(filtered, filterState.sort);
+
+        renderChannels(filtered);
+        updateResultsCount(filtered.length);
+        updateURLParams(filterState);
+      }
+
+      // Render channel grid
+      function renderChannels(channels) {
+        const grid = document.getElementById('channel-grid');
+        if (!grid) return;
+
+        if (channels.length === 0) {
+          renderEmptyState(grid, 'No channels match your filters. Try clearing filters.');
+          return;
+        }
+
+        // Clear grid
+        while (grid.firstChild) {
+          grid.removeChild(grid.firstChild);
+        }
+
+        // Render cards (server-side rendered cards already exist, but client needs dynamic update)
+        channels.forEach((channel) => {
+          const card = createChannelCard(channel);
+          grid.appendChild(card);
+        });
+
+        // Re-init bookmark listeners
+        initBookmarkListeners();
+      }
+
+      // Create channel card element (XSS-safe)
+      function createChannelCard(channel) {
+        const card = document.createElement('div');
+        card.className = 'channel-card';
+        card.setAttribute('data-channel-id', channel.id);
+
+        // Bookmark icon
+        const bookmark = document.createElement('span');
+        bookmark.className = 'bookmark-icon';
+        bookmark.setAttribute('data-bookmarkable', '');
+        bookmark.setAttribute('role', 'button');
+        bookmark.setAttribute('aria-label', 'Bookmark channel');
+        bookmark.textContent = '☆';
+
+        // Avatar
+        const avatar = document.createElement('img');
+        avatar.src = channel.avatar;
+        avatar.alt = `${channel.name} avatar`;
+        avatar.className = 'channel-card__avatar';
+        avatar.loading = 'lazy';
+
+        // Name
+        const name = document.createElement('h3');
+        name.className = 'channel-card__name';
+        name.textContent = channel.name;
+
+        // Topics
+        const topics = document.createElement('div');
+        topics.className = 'channel-card__topics';
+        const topicsStrong = document.createElement('strong');
+        topicsStrong.textContent = 'Topics: ';
+        topics.appendChild(topicsStrong);
+        topics.appendChild(document.createTextNode(channel.topics.join(', ')));
+
+        // Playlists
+        const playlists = document.createElement('div');
+        playlists.className = 'channel-card__playlists';
+        const playlistsStrong = document.createElement('strong');
+        playlistsStrong.textContent = 'Featured Playlists:';
+        playlists.appendChild(playlistsStrong);
+        const playlistsUl = document.createElement('ul');
+        channel.playlists.forEach((playlist) => {
+          const li = document.createElement('li');
+          li.textContent = playlist;
+          playlistsUl.appendChild(li);
+        });
+        playlists.appendChild(playlistsUl);
+
+        // Visit button
+        const button = document.createElement('a');
+        button.href = channel.url;
+        button.target = '_blank';
+        button.rel = 'noopener noreferrer';
+        button.className = 'channel-card__button';
+        button.textContent = 'Visit Channel →';
+
+        // Assemble card
+        card.appendChild(bookmark);
+        card.appendChild(avatar);
+        card.appendChild(name);
+        card.appendChild(topics);
+        if (channel.playlists.length > 0) {
+          card.appendChild(playlists);
+        }
+        card.appendChild(button);
+
+        return card;
+      }
+
+      // Initialize bookmark listeners
+      function initBookmarkListeners() {
+        const bookmarkIcons = document.querySelectorAll('[data-bookmarkable]');
+
+        bookmarkIcons.forEach((icon) => {
+          const card = icon.closest('[data-channel-id]');
+          const channelId = card?.getAttribute('data-channel-id');
+
+          if (!channelId) return;
+
+          // Load bookmark state
+          const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+          if (bookmarks.includes(channelId)) {
+            icon.textContent = '★';
+            icon.classList.add('bookmark-icon--active');
+          }
+
+          // Toggle bookmark
+          icon.addEventListener('click', () => {
+            const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+            const index = bookmarks.indexOf(channelId);
+
+            if (index === -1) {
+              bookmarks.push(channelId);
+              icon.textContent = '★';
+              icon.classList.add('bookmark-icon--active');
+            } else {
+              bookmarks.splice(index, 1);
+              icon.textContent = '☆';
+              icon.classList.remove('bookmark-icon--active');
+            }
+
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            window.dispatchEvent(new CustomEvent('bookmarksChanged'));
+          });
+        });
+      }
+
+      // Listen to filter events
+      window.addEventListener('searchChanged', (e) => {
+        filterState.search = e.detail.query;
+        applyFilters();
+      });
+
+      window.addEventListener('filterChanged', (e) => {
+        filterState.category = e.detail.category;
+        filterState.tags = e.detail.tags;
+        filterState.bookmarksOnly = e.detail.bookmarksOnly;
+        filterState.sort = e.detail.sort;
+        applyFilters();
+      });
+
+      window.addEventListener('bookmarksChanged', () => {
+        if (filterState.bookmarksOnly) {
+          applyFilters();
+        }
+      });
+
+      // Initial render
+      document.addEventListener('DOMContentLoaded', () => {
+        // Load URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('search')) filterState.search = urlParams.get('search').toLowerCase();
+        if (urlParams.get('category')) filterState.category = urlParams.get('category');
+        if (urlParams.get('tags')) filterState.tags = urlParams.get('tags').split(',');
+        if (urlParams.get('bookmarks') === 'true') filterState.bookmarksOnly = true;
+        if (urlParams.get('sort')) filterState.sort = urlParams.get('sort');
+
+        applyFilters();
+      });
+    </script>
   </body>
 </html>
