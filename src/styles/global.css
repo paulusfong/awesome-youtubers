@@ -231,6 +231,79 @@ h1, h2, h3, h4, h5, h6 {
   color: #555;
 }
 
+/* Focus Styles (Accessibility) */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+[role="button"]:focus {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Remove outline for mouse users (keeps it for keyboard) */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Keyboard Navigation */
+.filter-bar__category-pill:focus,
+.bookmark-icon:focus {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Skip to Content Link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Reduced Motion (Accessibility) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .channel-card {
+    border-width: 4px;
+  }
+
+  .filter-bar__category-pill {
+    border-width: 4px;
+  }
+}
+
 /* Utility Classes */
 .sr-only {
   position: absolute;
