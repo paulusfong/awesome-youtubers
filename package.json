@@ -10,10 +10,12 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "test": "echo \"Tests to be implemented\""
+    "test": "vitest"
   },
   "dependencies": {
     "astro": "^4.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "vitest": "^4.1.10"
+  }
 }
