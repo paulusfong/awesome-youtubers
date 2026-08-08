@@ -17,6 +17,8 @@
 
 > Watch video tutorials from YouTubers that teach you about technology.
 
+**🎯 [Browse the Web Directory](https://cfhong.github.io/awesome-youtubers/)** — Search, filter, and bookmark channels with our interactive web interface.
+
 ## Other languages
 
 This repository only lists awesome YouTubers that speak English. Awesome contributors have created their own list of awesome tech YouTubers in other languages. **Below you can see all the repositories related.** If you believe you have awesome YouTubers in a certain language and you have at least more than a few of them, you can create your own list and let me know [opening a new issue](https://github.com/JoseDeFreitas/awesome-youtubers/issues/new).
