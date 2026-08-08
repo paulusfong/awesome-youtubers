@@ -1,0 +1,50 @@
+---
+// SearchBar.astro - Search input with debounced filtering
+---
+
+<div class="search-bar">
+  <input
+    type="text"
+    id="search-input"
+    class="filter-bar__search"
+    placeholder="Search channels by name, topic, or playlist..."
+    aria-label="Search channels"
+  />
+</div>
+
+<script>
+  // Debounced search functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('search-input') as HTMLInputElement;
+    if (!searchInput) return;
+
+    let debounceTimer: ReturnType<typeof setTimeout>;
+
+    searchInput.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+
+      debounceTimer = setTimeout(() => {
+        const query = searchInput.value.trim().toLowerCase();
+
+        // Dispatch custom event for filter logic
+        window.dispatchEvent(
+          new CustomEvent('searchChanged', {
+            detail: { query },
+          })
+        );
+      }, 300); // 300ms debounce
+    });
+
+    // Restore search state from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    if (searchParam) {
+      searchInput.value = searchParam;
+      window.dispatchEvent(
+        new CustomEvent('searchChanged', {
+          detail: { query: searchParam.toLowerCase() },
+        })
+      );
+    }
+  });
+</script>

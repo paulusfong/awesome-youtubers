@@ -1,0 +1,318 @@
+/* global.css - Modern Bold Theme */
+
+:root {
+  /* Color Palette */
+  --gradient-primary: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  --gradient-secondary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --color-text: #000;
+  --color-border: #000;
+  --color-bg-card: #fff;
+  --color-bg-body: #f8f9fa;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  --font-size-base: 16px;
+  --font-size-card-name: 18px;
+  --font-size-card-content: 14px;
+
+  /* Spacing */
+  --border-radius-card: 12px;
+  --border-radius-input: 6px;
+  --border-width: 3px;
+  --grid-gap: 1.5rem;
+
+  /* Breakpoints */
+  --breakpoint-mobile: 768px;
+  --breakpoint-desktop: 1024px;
+}
+
+/* Reset & Base */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-bg-body);
+  color: var(--color-text);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  margin: 0 0 1rem 0;
+}
+
+/* Container */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Channel Grid */
+.channel-grid {
+  display: grid;
+  gap: var(--grid-gap);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .channel-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .channel-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Channel Card */
+.channel-card {
+  background: var(--color-bg-card);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-card);
+  padding: 1.5rem;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.channel-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(rgba(250, 112, 154, 0.05), rgba(254, 225, 64, 0.05));
+}
+
+.channel-card__avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: var(--border-width) solid var(--color-border);
+  margin-bottom: 1rem;
+}
+
+.channel-card__name {
+  font-size: var(--font-size-card-name);
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+}
+
+.channel-card__topics {
+  font-size: var(--font-size-card-content);
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.channel-card__playlists {
+  font-size: var(--font-size-card-content);
+  margin-bottom: 1rem;
+  flex-grow: 1;
+}
+
+.channel-card__playlists ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0 0 0;
+}
+
+.channel-card__playlists li {
+  margin-bottom: 0.25rem;
+}
+
+.channel-card__button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: var(--gradient-primary);
+  color: var(--color-text);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-input);
+  text-decoration: none;
+  font-weight: bold;
+  text-align: center;
+  transition: opacity 0.2s ease;
+}
+
+.channel-card__button:hover {
+  opacity: 0.9;
+}
+
+/* Filter Bar (Sticky) */
+.filter-bar {
+  position: sticky;
+  top: 0;
+  background: var(--color-bg-body);
+  padding: 1.5rem 1rem;
+  border-bottom: var(--border-width) solid var(--color-border);
+  z-index: 100;
+  margin-bottom: 2rem;
+}
+
+.filter-bar__search {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: var(--font-size-base);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-input);
+  margin-bottom: 1rem;
+}
+
+.filter-bar__categories {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.filter-bar__category-pill {
+  padding: 0.5rem 1rem;
+  background: var(--color-bg-card);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-input);
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.filter-bar__category-pill:hover {
+  background: var(--gradient-secondary);
+  color: #fff;
+}
+
+.filter-bar__category-pill--active {
+  background: var(--gradient-primary);
+  border-color: var(--color-border);
+  font-weight: bold;
+}
+
+.filter-bar__count {
+  font-size: var(--font-size-card-content);
+  color: #555;
+}
+
+/* Bookmark Icon */
+.bookmark-icon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease;
+}
+
+.bookmark-icon:hover {
+  transform: scale(1.2);
+}
+
+.bookmark-icon--active {
+  color: #ffc107;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #555;
+}
+
+/* Focus Styles (Accessibility) */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+[role="button"]:focus {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Remove outline for mouse users (keeps it for keyboard) */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Keyboard Navigation */
+.filter-bar__category-pill:focus,
+.bookmark-icon:focus {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Skip to Content Link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Reduced Motion (Accessibility) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .channel-card {
+    border-width: 4px;
+  }
+
+  .filter-bar__category-pill {
+    border-width: 4px;
+  }
+}
+
+/* Utility Classes */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

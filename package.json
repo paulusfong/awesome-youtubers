@@ -1,0 +1,21 @@
+{
+  "name": "awesome-youtubers-web-directory",
+  "version": "1.0.0",
+  "description": "Static web directory for awesome-youtubers with search and filter capabilities",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "astro": "^4.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.10"
+  }
+}
