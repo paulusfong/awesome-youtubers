@@ -17,7 +17,7 @@
 
 > Watch video tutorials from YouTubers that teach you about technology.
 
-**🎯 [Browse the Web Directory](https://cfhong.github.io/awesome-youtubers/)** — Search, filter, and bookmark channels with our interactive web interface.
+**🎯 [Browse the Web Directory](https://paulusfong.github.io/awesome-youtubers/)** — Search, filter, and bookmark channels with our interactive web interface.
 
 ## Other languages
 
