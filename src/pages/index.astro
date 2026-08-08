@@ -43,7 +43,7 @@ const { channels, categories, allTopics } = channelsData;
       import { filterChannels, sortChannels, updateURLParams, renderEmptyState, updateResultsCount } from '../scripts/filter.js';
 
       // Load channels data client-side
-      const channelsData = await fetch('/channels.json').then(r => r.json());
+      const channelsData = await fetch('/awesome-youtubers/channels.json').then(r => r.json());
       let allChannels = channelsData.channels;
 
       // Filter state
