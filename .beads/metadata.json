@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "awesome_youtubers",
+  "project_id": "de6d7f6f-8ce1-40b6-91a0-0832026e943c"
+}
