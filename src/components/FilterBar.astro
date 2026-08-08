@@ -1,7 +1,193 @@
 ---
-// FilterBar component - to be implemented in Task 2
+// FilterBar.astro - Category pills, sort, bookmarks, topic tags
+export interface Props {
+  categories: string[];
+  allTopics: string[];
+}
+
+const { categories, allTopics } = Astro.props;
 ---
 
 <div class="filter-bar">
-  <!-- Filter bar implementation -->
+  <div class="container">
+    <!-- Top row: Sort & Bookmarks -->
+    <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+      <select id="sort-select" class="filter-bar__search" style="width: auto; flex-grow: 0;">
+        <option value="az">Sort: A-Z</option>
+        <option value="za">Sort: Z-A</option>
+        <option value="random">Sort: Random</option>
+      </select>
+
+      <button id="bookmarks-toggle" class="filter-bar__category-pill" style="margin-left: auto;">
+        ⭐ Bookmarks (<span id="bookmark-count">0</span>)
+      </button>
+    </div>
+
+    <!-- Category pills -->
+    <div class="filter-bar__categories">
+      <button class="filter-bar__category-pill filter-bar__category-pill--active" data-category="all">
+        All
+      </button>
+      {categories.map((category) => (
+        <button class="filter-bar__category-pill" data-category={category}>
+          {category}
+        </button>
+      ))}
+    </div>
+
+    <!-- Topic tags dropdown -->
+    <div style="margin-bottom: 1rem;">
+      <button id="topic-dropdown-toggle" class="filter-bar__category-pill">
+        + Tags (<span id="selected-tags-count">0</span>)
+      </button>
+      <div id="topic-dropdown" style="display: none; margin-top: 0.5rem; max-height: 300px; overflow-y: auto; background: white; border: 3px solid #000; border-radius: 6px; padding: 1rem;">
+        {allTopics.map((topic) => (
+          <label style="display: block; margin-bottom: 0.5rem; cursor: pointer;">
+            <input type="checkbox" class="topic-checkbox" value={topic} />
+            {' '}{topic}
+          </label>
+        ))}
+      </div>
+    </div>
+
+    <!-- Results count & clear filters -->
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <div class="filter-bar__count">
+        Showing <span id="results-count">0</span> channels
+      </div>
+      <button id="clear-filters" class="filter-bar__category-pill" style="display: none;">
+        Clear Filters
+      </button>
+    </div>
+  </div>
 </div>
+
+<script>
+  // FilterBar client-side logic
+  document.addEventListener('DOMContentLoaded', () => {
+    const categoryPills = document.querySelectorAll('[data-category]');
+    const sortSelect = document.getElementById('sort-select') as HTMLSelectElement;
+    const bookmarksToggle = document.getElementById('bookmarks-toggle');
+    const topicDropdownToggle = document.getElementById('topic-dropdown-toggle');
+    const topicDropdown = document.getElementById('topic-dropdown');
+    const topicCheckboxes = document.querySelectorAll('.topic-checkbox') as NodeListOf<HTMLInputElement>;
+    const clearFiltersBtn = document.getElementById('clear-filters');
+    const bookmarkCountSpan = document.getElementById('bookmark-count');
+    const selectedTagsCountSpan = document.getElementById('selected-tags-count');
+
+    let activeCategory = 'all';
+    let activeTags: string[] = [];
+    let bookmarksOnly = false;
+
+    // Category pill clicks
+    categoryPills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        const category = pill.getAttribute('data-category') || 'all';
+        activeCategory = category;
+
+        categoryPills.forEach((p) => p.classList.remove('filter-bar__category-pill--active'));
+        pill.classList.add('filter-bar__category-pill--active');
+
+        dispatchFilterChange();
+      });
+    });
+
+    // Sort change
+    sortSelect?.addEventListener('change', () => {
+      dispatchFilterChange();
+    });
+
+    // Bookmarks toggle
+    bookmarksToggle?.addEventListener('click', () => {
+      bookmarksOnly = !bookmarksOnly;
+      if (bookmarksOnly) {
+        bookmarksToggle.classList.add('filter-bar__category-pill--active');
+      } else {
+        bookmarksToggle.classList.remove('filter-bar__category-pill--active');
+      }
+      dispatchFilterChange();
+    });
+
+    // Update bookmark count
+    function updateBookmarkCount() {
+      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+      if (bookmarkCountSpan) {
+        bookmarkCountSpan.textContent = bookmarks.length.toString();
+      }
+    }
+    updateBookmarkCount();
+    window.addEventListener('bookmarksChanged', updateBookmarkCount);
+
+    // Topic dropdown toggle
+    topicDropdownToggle?.addEventListener('click', () => {
+      if (topicDropdown) {
+        topicDropdown.style.display = topicDropdown.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+
+    // Topic checkbox changes
+    topicCheckboxes.forEach((checkbox) => {
+      checkbox.addEventListener('change', () => {
+        activeTags = Array.from(topicCheckboxes)
+          .filter((cb) => cb.checked)
+          .map((cb) => cb.value);
+
+        if (selectedTagsCountSpan) {
+          selectedTagsCountSpan.textContent = activeTags.length.toString();
+        }
+
+        dispatchFilterChange();
+      });
+    });
+
+    // Clear filters
+    clearFiltersBtn?.addEventListener('click', () => {
+      activeCategory = 'all';
+      activeTags = [];
+      bookmarksOnly = false;
+
+      categoryPills.forEach((p) => p.classList.remove('filter-bar__category-pill--active'));
+      const allPill = document.querySelector('[data-category="all"]');
+      allPill?.classList.add('filter-bar__category-pill--active');
+
+      topicCheckboxes.forEach((cb) => (cb.checked = false));
+      if (selectedTagsCountSpan) {
+        selectedTagsCountSpan.textContent = '0';
+      }
+
+      if (sortSelect) {
+        sortSelect.value = 'az';
+      }
+
+      bookmarksToggle?.classList.remove('filter-bar__category-pill--active');
+
+      dispatchFilterChange();
+    });
+
+    // Show/hide clear filters button
+    function updateClearFiltersVisibility() {
+      if (!clearFiltersBtn) return;
+      const hasActiveFilters = activeCategory !== 'all' || activeTags.length > 0 || bookmarksOnly;
+      clearFiltersBtn.style.display = hasActiveFilters ? 'inline-block' : 'none';
+    }
+
+    // Dispatch filter change event
+    function dispatchFilterChange() {
+      updateClearFiltersVisibility();
+
+      window.dispatchEvent(
+        new CustomEvent('filterChanged', {
+          detail: {
+            category: activeCategory,
+            tags: activeTags,
+            bookmarksOnly,
+            sort: sortSelect?.value || 'az',
+          },
+        })
+      );
+    }
+
+    // Initial state
+    updateClearFiltersVisibility();
+  });
+</script>
