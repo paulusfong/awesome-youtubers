@@ -131,4 +131,169 @@ Content`;
       expect(result.allTopics).toEqual([]);
     });
   });
+
+  // Channel extraction tests
+  describe('channel extraction', () => {
+    test('extracts single channel with all fields', () => {
+      const readmeContent = `## Programming in general
+
+[<img align="left" height="94px" width="94px" alt="Channel's avatar" src="https://yt3.ggpht.com/example.jpg"/>](https://www.youtube.com/c/TheCodingTrain)
+
+[**The Coding Train**](https://www.youtube.com/c/TheCodingTrain) \\
+Content about: Algorithms, Processing \\
+Featured playlists: \`The Nature of Code\`, \`Learning Processing\`.`;
+
+      const result = parseReadme(readmeContent);
+
+      expect(result.channels).toHaveLength(1);
+      expect(result.channels[0]).toEqual({
+        id: 'thecodingtrain',
+        name: 'The Coding Train',
+        url: 'https://www.youtube.com/c/TheCodingTrain',
+        avatar: 'https://yt3.ggpht.com/example.jpg',
+        category: 'Programming in general',
+        topics: ['Algorithms', 'Processing'],
+        playlists: ['The Nature of Code', 'Learning Processing'],
+        searchText: expect.any(String),
+      });
+    });
+
+    test('generates slug ID from channel name', () => {
+      const readmeContent = `## Programming in general
+
+[<img align="left" height="94px" width="94px" alt="avatar" src="https://yt3.ggpht.com/a.jpg"/>](https://www.youtube.com/c/freeCodeCamp)
+
+[**freeCodeCamp.org**](https://www.youtube.com/c/freeCodeCamp) \\
+Content about: Web Dev \\
+Featured playlists: \`Python Tutorials\`.`;
+
+      const result = parseReadme(readmeContent);
+
+      expect(result.channels[0].id).toBe('freecodecamporg');
+    });
+
+    test('extracts multiple channels under same category', () => {
+      const readmeContent = `## Programming in general
+
+[<img align="left" height="94px" width="94px" alt="avatar" src="https://yt3.ggpht.com/a.jpg"/>](https://www.youtube.com/c/channel1)
+
+[**Channel One**](https://www.youtube.com/c/channel1) \\
+Content about: JavaScript \\
+Featured playlists: \`JS Basics\`.
+
+[<img align="left" height="94px" width="94px" alt="avatar" src="https://yt3.ggpht.com/b.jpg"/>](https://www.youtube.com/c/channel2)
+
+[**Channel Two**](https://www.youtube.com/c/channel2) \\
+Content about: Python \\
+Featured playlists: \`Python 101\`.`;
+
+      const result = parseReadme(readmeContent);
+
+      expect(result.channels).toHaveLength(2);
+      expect(result.channels[0].name).toBe('Channel One');
+      expect(result.channels[1].name).toBe('Channel Two');
+    });
+
+    test('handles multiple topics separated by commas', () => {
+      const readmeContent = `## Programming in general
+
+[<img align="left" height="94px" width="94px" alt="avatar" src="https://yt3.ggpht.com/a.jpg"/>](https://www.youtube.com/c/test)
+
+[**Test Channel**](https://www.youtube.com/c/test) \\
+Content about: JavaScript, TypeScript, React.js, Node.js \\
+Featured playlists: \`Tutorial Series\`.`;
+
+      const result = parseReadme(readmeContent);
+
+      expect(result.channels[0].topics).toEqual(['JavaScript', 'TypeScript', 'React.js', 'Node.js']);
+    });
+
+    test('handles multiple playlists in backticks separated by commas', () => {
+      const readmeContent = `## Programming in general
+
+[<img align="left" height="94px" width="94px" alt="avatar" src="https://yt3.ggpht.com/a.jpg"/>](https://www.youtube.com/c/test)
+
+[**Test Channel**](https://www.youtube.com/c/test) \\
+Content about: JavaScript \\
+Featured playlists: \`Intro to JS\`, \`Advanced JS\`, \`JS Projects\`.`;
+
+      const result = parseReadme(readmeContent);
+
+      expect(result.channels[0].playlists).toEqual(['Intro to JS', 'Advanced JS', 'JS Projects']);
+    });
+
+    test('creates searchText from name, topics, and playlists', () => {
+      const readmeContent = `## Programming in general
+
+[<img align="left" height="94px" width="94px" alt="avatar" src="https://yt3.ggpht.com/a.jpg"/>](https://www.youtube.com/c/test)
+
+[**Test Channel**](https://www.youtube.com/c/test) \\
+Content about: JavaScript, React \\
+Featured playlists: \`React Tutorial\`, \`JS Basics\`.`;
+
+      const result = parseReadme(readmeContent);
+
+      expect(result.channels[0].searchText).toContain('Test Channel');
+      expect(result.channels[0].searchText).toContain('JavaScript');
+      expect(result.channels[0].searchText).toContain('React');
+      expect(result.channels[0].searchText).toContain('React Tutorial');
+      expect(result.channels[0].searchText).toContain('JS Basics');
+    });
+
+    test('handles channel with <br /> at end', () => {
+      const readmeContent = `## Programming in general
+
+[<img align="left" height="94px" width="94px" alt="avatar" src="https://yt3.ggpht.com/a.jpg"/>](https://www.youtube.com/c/test)
+
+[**Test Channel**](https://www.youtube.com/c/test) \\
+Content about: Rust \\
+Featured playlists: \`Intro to Rust\`. \\
+<br />`;
+
+      const result = parseReadme(readmeContent);
+
+      expect(result.channels).toHaveLength(1);
+      expect(result.channels[0].name).toBe('Test Channel');
+    });
+  });
+
+  // Topic extraction tests
+  describe('topic extraction', () => {
+    test('extracts unique topics from all channels', () => {
+      const readmeContent = `## Programming in general
+
+[<img align="left" height="94px" width="94px" alt="avatar" src="https://yt3.ggpht.com/a.jpg"/>](https://www.youtube.com/c/channel1)
+
+[**Channel One**](https://www.youtube.com/c/channel1) \\
+Content about: JavaScript, React \\
+Featured playlists: \`Tutorial\`.
+
+[<img align="left" height="94px" width="94px" alt="avatar" src="https://yt3.ggpht.com/b.jpg"/>](https://www.youtube.com/c/channel2)
+
+[**Channel Two**](https://www.youtube.com/c/channel2) \\
+Content about: Python, JavaScript \\
+Featured playlists: \`Basics\`.`;
+
+      const result = parseReadme(readmeContent);
+
+      expect(result.allTopics).toHaveLength(3);
+      expect(result.allTopics).toContain('JavaScript');
+      expect(result.allTopics).toContain('React');
+      expect(result.allTopics).toContain('Python');
+    });
+
+    test('sorts topics alphabetically', () => {
+      const readmeContent = `## Programming in general
+
+[<img align="left" height="94px" width="94px" alt="avatar" src="https://yt3.ggpht.com/a.jpg"/>](https://www.youtube.com/c/test)
+
+[**Test**](https://www.youtube.com/c/test) \\
+Content about: Rust, Python, JavaScript \\
+Featured playlists: \`Tutorial\`.`;
+
+      const result = parseReadme(readmeContent);
+
+      expect(result.allTopics).toEqual(['JavaScript', 'Python', 'Rust']);
+    });
+  });
 });
