@@ -1,0 +1,23 @@
+/* global.css - Modern bold theme styles to be implemented in Task 3 */
+
+:root {
+  /* Color palette */
+  /* Bold modern aesthetic colors */
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  --font-size-base: 1rem;
+  --font-size-heading: 2rem;
+}
+
+/* Global styles */
+html {
+  font-family: var(--font-family);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}

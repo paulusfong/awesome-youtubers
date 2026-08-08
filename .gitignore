@@ -7,3 +7,25 @@
 
 # Git worktrees
 .worktrees/
+
+# Astro project files
+node_modules/
+dist/
+.astro/
+public/channels.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
