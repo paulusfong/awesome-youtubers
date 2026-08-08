@@ -1,7 +1,97 @@
 ---
-// ChannelCard component - to be implemented in Task 2
+// ChannelCard.astro - Individual channel display card
+export interface Props {
+  channel: {
+    id: string;
+    name: string;
+    url: string;
+    avatar: string;
+    category: string;
+    topics: string[];
+    playlists: string[];
+  };
+}
+
+const { channel } = Astro.props;
 ---
 
-<div class="channel-card">
-  <!-- Channel card implementation -->
+<div class="channel-card" data-channel-id={channel.id}>
+  <span class="bookmark-icon" data-bookmarkable role="button" aria-label="Bookmark channel">
+    ☆
+  </span>
+
+  <img
+    src={channel.avatar}
+    alt={`${channel.name} avatar`}
+    class="channel-card__avatar"
+    loading="lazy"
+  />
+
+  <h3 class="channel-card__name">{channel.name}</h3>
+
+  <div class="channel-card__topics">
+    <strong>Topics:</strong> {channel.topics.join(', ')}
+  </div>
+
+  {channel.playlists.length > 0 && (
+    <div class="channel-card__playlists">
+      <strong>Featured Playlists:</strong>
+      <ul>
+        {channel.playlists.map((playlist) => (
+          <li>{playlist}</li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  <a
+    href={channel.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="channel-card__button"
+  >
+    Visit Channel →
+  </a>
 </div>
+
+<script>
+  // Bookmark functionality (client-side)
+  document.addEventListener('DOMContentLoaded', () => {
+    const bookmarkIcons = document.querySelectorAll('[data-bookmarkable]');
+
+    bookmarkIcons.forEach((icon) => {
+      const card = icon.closest('[data-channel-id]');
+      const channelId = card?.getAttribute('data-channel-id');
+
+      if (!channelId) return;
+
+      // Load bookmark state
+      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+      if (bookmarks.includes(channelId)) {
+        icon.textContent = '★';
+        icon.classList.add('bookmark-icon--active');
+      }
+
+      // Toggle bookmark
+      icon.addEventListener('click', () => {
+        const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+        const index = bookmarks.indexOf(channelId);
+
+        if (index === -1) {
+          bookmarks.push(channelId);
+          icon.textContent = '★';
+          icon.classList.add('bookmark-icon--active');
+        } else {
+          bookmarks.splice(index, 1);
+          icon.textContent = '☆';
+          icon.classList.remove('bookmark-icon--active');
+        }
+
+        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+
+        // Dispatch event for filter updates
+        window.dispatchEvent(new CustomEvent('bookmarksChanged'));
+      });
+    });
+  });
+</script>
